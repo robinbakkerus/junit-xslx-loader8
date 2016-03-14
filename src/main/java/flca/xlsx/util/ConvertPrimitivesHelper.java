@@ -106,11 +106,13 @@ final class ConvertPrimitivesHelper {
 
 	private static String string2String(String aValue) throws XlsxSetValueException {
 		try {
-			byte b1 = (byte)aValue.charAt(0);
-			byte b2 = (byte)aValue.charAt(aValue.length()-1);
-			if (b1==28 && b2==29) {
-				LOGGER.warning("String don't have to be surounded with quotes");
-				return aValue.substring(1, aValue.length()-1);
+			byte b1 = (byte) aValue.charAt(0);
+			byte b2 = (byte) aValue.charAt(aValue.length() - 1);
+			if (b1 == 28 && b2 == 29) {
+				if (aValue.length() > 2) {
+					LOGGER.warning("A string doesn't have to be surounded with quotes");
+				}
+				return aValue.substring(1, aValue.length() - 1);
 			} else {
 				return aValue;
 			}
@@ -119,7 +121,6 @@ final class ConvertPrimitivesHelper {
 			return null;
 		}
 	}
-
 
 	private static Character string2Char(String aValue) throws XlsxSetValueException {
 		try {

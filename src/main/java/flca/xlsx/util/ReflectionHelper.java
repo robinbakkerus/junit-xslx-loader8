@@ -153,12 +153,17 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	}
 
 	private void setPropValue(Object target, Object propType, Method setter, String value) throws XlsxSetValueException {
-		if (isNumeric(value) && xlsDataMap.hasXlsData((Class<?>)propType, getNr(value))) {
+		if (isRefToNr(propType, value)) {
 			final XlsxData xlsdata = xlsDataMap.getData((Class<?>)propType, getNr(value));
 			setThePropValue(target, propType, setter, getStringValue(xlsdata, propType, getNr(value)));
 		} else {
 			setThePropValue(target, propType, setter, value);
 		}
+	}
+	
+	private boolean isRefToNr(Object propType, String value) {
+		Class<?> clz =(Class<?>)propType;
+		return isNumeric(value) && !clz.isPrimitive() && xlsDataMap.hasXlsData((Class<?>)propType, getNr(value));
 	}
 
 	private void setThePropValue(Object target, Object propType, Method setter, String value) throws XlsxSetValueException {
