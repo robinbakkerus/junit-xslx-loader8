@@ -1,6 +1,8 @@
 # junit-xslx-loader8
 
 This is a (Java8) library that makes it very easy to populate in your junit tests, the objects with testdata coming from Excel(2007) **.xlsx** files.
+(this projec is identical to junit-xlst-loader7 but in addition also supports java.util.LocalDate(Time) )
+
 
 # Setup instruction
 In the coming weeks I want to post the jar file to the maven-repository. For now do the following:
