@@ -66,11 +66,11 @@ class MethodHelper {
 	}
 
 	private static Map<String, PropertyDescriptor> getProperties(Class<?> clz) throws IntrospectionException {
-		Map<String, PropertyDescriptor> result = new HashMap<>();
+		Map<String, PropertyDescriptor> r = new HashMap<>();
 		for (PropertyDescriptor prop : Introspector.getBeanInfo(clz, Object.class).getPropertyDescriptors()) {
-			result.put(prop.getName(), prop);
+			r.put(prop.getName(), prop);
 		}
-		return result;
+		return r;
 	}
 
 }

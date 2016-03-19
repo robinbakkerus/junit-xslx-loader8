@@ -56,7 +56,7 @@ public class TestExample {
 
 	/*
 	 * Here we the test different scenario's for the MortgageService. The service is called like ths:
-	 * Mortgage result = new MortgageServiceImpl().calculate(aPerson, aHouse, aProductType);
+	 * Mortgage r = new MortgageServiceImpl().calculate(aPerson, aHouse, aProductType);
 	 * We loop through all the excel sheets, and all the nr's that belong to TestCase.class 
 	 * and call the methode testTestcase with the sheet and nr.
 	 */
@@ -72,10 +72,10 @@ public class TestExample {
 	
 	/*
 	 * With the given sheet and nr we create all the objects (Person, House, ProductType) to execute the mortgage, 
-	 * and in addition we also create to dedicated class just for this junit test:  Testcase, that contains the expected result values.
+	 * and in addition we also create to dedicated class just for this junit test:  Testcase, that contains the expected r values.
 	 * Alternatively we could have put extra properties in TestCase (like Person person, House house etc), than only make the TestCase object,
 	 * and grap the object needed for the service from this TestCase instance.
-	 * Than we run the mortgage service and finally the result with expected results.
+	 * Than we run the mortgage service and finally the r with expected rs.
 	 */
 	private void testTestcase(Xlsx xls, byte sheet, int nr) {
 		System.out.println("testing " + sheet + "/" + nr);
@@ -83,10 +83,10 @@ public class TestExample {
 		Person testPerson = (Person) xls.make(Person.class, sheet, nr);
 		House testHouse = (House) xls.make(House.class, sheet, nr);
 		MortgageProductType type = (MortgageProductType) xls.make(MortgageProductType.class, sheet, nr);
-		Mortgage result = new MortgageServiceImpl().calculate(testPerson, testHouse, type);
-		assertEquals(result.getAmount().doubleValue(),testcase.getAmount(), 1.0d);
-		assertEquals(result.getnYears(),testcase.getNyears(), 1.0d);
-		assertEquals(result.getIncomeRatio().doubleValue(),testcase.getIncomeRatio(), 1.0d);
+		Mortgage r = new MortgageServiceImpl().calculate(testPerson, testHouse, type);
+		assertEquals(r.getAmount().doubleValue(),testcase.getAmount(), 1.0d);
+		assertEquals(r.getnYears(),testcase.getNyears(), 1.0d);
+		assertEquals(r.getIncomeRatio().doubleValue(),testcase.getIncomeRatio(), 1.0d);
 	}
 
 }

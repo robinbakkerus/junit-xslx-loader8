@@ -12,7 +12,7 @@ abstract class AbstractXlsxUtils {
 	private static final String DELIM = ",";
 
 	Set<Integer> getNrs(String value) {
-		Set<Integer> result = new HashSet<>();
+		Set<Integer> r = new HashSet<>();
 
 		Matcher matcher = NRS_LIST_PATTERN.matcher(value);
 		if (matcher.find()) {
@@ -22,10 +22,10 @@ abstract class AbstractXlsxUtils {
 			for (int i = 0; i < nrs.length; i++) {
 				String nr = nrs[i].trim();
 				if (!nr.isEmpty()) {
-					result.add(getNr(nr));
+					r.add(getNr(nr));
 				}
 			}
-			return result;
+			return r;
 		}
 	}
 

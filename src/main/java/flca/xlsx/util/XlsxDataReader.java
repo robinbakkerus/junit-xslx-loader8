@@ -83,16 +83,16 @@ class XlsxDataReader extends AbstractXlsxUtils {
 
 
 	private InputStream getInputStream(String excelFilename) throws FileNotFoundException {
-		InputStream result = this.getClass().getResourceAsStream(excelFilename);
-		if (result != null) {
-			return result;
+		InputStream r = this.getClass().getResourceAsStream(excelFilename);
+		if (r != null) {
+			return r;
 		} else {
 			return new FileInputStream(new File(excelFilename));
 		}
 	}
 	
 	private List<XlsxData> readData(final int sheetIndex) {
-		List<XlsxData> result = new ArrayList<>();
+		List<XlsxData> r = new ArrayList<>();
 
 		worksheet = workbook.getSheet(workbook.getSheetName(sheetIndex));
 		List<FqnRowColHash> fqnames = findFqnames();
@@ -100,9 +100,9 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		for (FqnRowColHash fqnHash : fqnames) {
 			final String fqn = fqnHash.fqn;
 			XlsxData xlsdata = getData(fqn, fqnHash.rowcol);
-			result.add(xlsdata);
+			r.add(xlsdata);
 		}
-		return result;
+		return r;
 	}
 
 	private XlsxData getData(final String classname, RowCol pnt) {
@@ -115,34 +115,34 @@ class XlsxDataReader extends AbstractXlsxUtils {
 	}
 	
 	private int[][] getRectangle(RowCol pnt) {
-		final int result[][] = new int[][] { { -1, -1 }, { -1, -1 } };
+		final int r[][] = new int[][] { { -1, -1 }, { -1, -1 } };
 		int[] ul = new int[] { pnt.row, pnt.col };
 		int[] lr = findLowerRight(ul);
 		if (lr[0] >= 0 && lr[1] >= 0) {
-			result[0][0] = ul[0];
-			result[0][1] = ul[1];
-			result[1][0] = lr[0];
-			result[1][1] = lr[1];
+			r[0][0] = ul[0];
+			r[0][1] = ul[1];
+			r[1][0] = lr[0];
+			r[1][1] = lr[1];
 		}
-		return result;
+		return r;
 	}
 
 	private List<FqnRowColHash> findFqnames() {
-		List<FqnRowColHash> result = new ArrayList<>();
+		List<FqnRowColHash> r = new ArrayList<>();
 
-		for (int r = 0; r < maxRow; r++) {
-			final Row row = worksheet.getRow(r);
+		for (int i = 0; i < maxRow; i++) {
+			final Row row = worksheet.getRow(i);
 			if (row != null) {
 				for (int c = 0; c < maxCol; c++) {
 					Cell cell = row.getCell(c);
 					if (isFqn(cell)) {
-						result.add(new FqnRowColHash(stringFrom(cell), new RowCol(r, c)));
+						r.add(new FqnRowColHash(stringFrom(cell), new RowCol(i, c)));
 					}
 				}
 			}
 		}
 
-		return result;
+		return r;
 	}
 
 	private boolean isFqn(Cell cell) {
@@ -161,7 +161,7 @@ class XlsxDataReader extends AbstractXlsxUtils {
 	}
 
 	private int[] findLowerRight(final int[] ul) {
-		int[] result = new int[] { -1, -1 };
+		int[] r = new int[] { -1, -1 };
 		int startRow = ul[0] + 1;
 		int startCol = ul[1];
 
@@ -170,33 +170,33 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		for (int c = startCol; c < startCol + maxCol; c++) {
 			String text = stringFrom(row.getCell(c));
 			if (text == null) {
-				result[1] = c - 1;
+				r[1] = c - 1;
 				break;
 			}
 		}
 
 		// how many rows
-		for (int r = startRow; r < startRow + maxRow; r++) {
-			row = worksheet.getRow(r);
+		for (int i = startRow; i < startRow + maxRow; i++) {
+			row = worksheet.getRow(i);
 			if (row == null || stringFrom(row.getCell(startCol)) == null) {
-				result[0] = r;
+				r[0] = i;
 				break;
 			}
 		}
 
-		return result;
+		return r;
 	}
 
 	private XlsxData readExcelValues(final int rect[][]) {
-		XlsxData result = new XlsxData();
+		XlsxData r = new XlsxData();
 
-		result.setFqn(getFqclassname(rect, worksheet));
-		result.setNames(getNames(rect, worksheet));
-		result.setValues(getValues(rect, worksheet));
-		result.setUl(new RowCol(rect[0][0], rect[0][1]));
-		result.setLr(new RowCol(rect[1][0], rect[1][1]));
+		r.setFqn(getFqclassname(rect, worksheet));
+		r.setNames(getNames(rect, worksheet));
+		r.setValues(getValues(rect, worksheet));
+		r.setUl(new RowCol(rect[0][0], rect[0][1]));
+		r.setLr(new RowCol(rect[1][0], rect[1][1]));
 
-		return result;
+		return r;
 	}
 
 	private boolean isValid(final int rect[][]) {
@@ -217,15 +217,15 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		int startCol = rect[0][1] + 1; // skip first column 'nr'
 		int endCol = rect[1][1];
 		int ncols = endCol - startCol + 1;
-		String result[] = new String[ncols];
+		String r[] = new String[ncols];
 
 		int i = 0;
 		for (int c = startCol; c <= endCol; c++) {
 			Row row = worksheet.getRow(startRow + 1);
-			result[i++] = stringFrom(row.getCell(c));
+			r[i++] = stringFrom(row.getCell(c));
 		}
 
-		return result;
+		return r;
 	}
 
 	private Map<Integer, String[]> getValues(final int rect[][], final Sheet worksheet) {
@@ -235,14 +235,14 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		int endCol = rect[1][1];
 		int ncols = endCol - startCol + 1;
 
-		Map<Integer, String[]> result = new HashMap<>();
+		Map<Integer, String[]> r = new HashMap<>();
 
 		Set<Integer> nrs = new HashSet<>();
-		for (int r = startRow; r < endRow; r++) {
+		for (int i = startRow; i < endRow; i++) {
 			int j = 0;
 			String values[] = new String[ncols - 1];
 			for (int c = startCol; c < startCol + (endCol - startCol + 1); c++) {
-				Row row = worksheet.getRow(r);
+				Row row = worksheet.getRow(i);
 				if (j == 0) {
 					nrs = getNrs(stringFrom(row.getCell(c)));
 				} else {
@@ -252,11 +252,11 @@ class XlsxDataReader extends AbstractXlsxUtils {
 			}
 			
 			for (int nr : nrs) {
-				result.put(nr, values);
+				r.put(nr, values);
 			}
 		}
 
-		return result;
+		return r;
 	}
 
 	/**

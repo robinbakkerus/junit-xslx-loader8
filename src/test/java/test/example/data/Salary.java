@@ -15,9 +15,9 @@ public class Salary {
 	}
 	
 	public static Salary withAmount(BigDecimal aValue) {
-		Salary result = new Salary();
-		result.setAmount(aValue);
-		return result;
+		Salary r = new Salary();
+		r.setAmount(aValue);
+		return r;
 	}
 	
 }

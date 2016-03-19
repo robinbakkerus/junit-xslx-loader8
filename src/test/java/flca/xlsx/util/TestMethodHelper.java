@@ -40,8 +40,8 @@ public class TestMethodHelper {
 	@Test
 	public void testGetAllProperties() throws IntrospectionException {
 		Foo foo = new Foo();
-		Set<String> result = MethodHelper.getAllProperties(foo);
-		Assert.assertTrue(result.size()==15);
+		Set<String> r = MethodHelper.getAllProperties(foo);
+		Assert.assertTrue(r.size()==15);
 	}
 	
 }

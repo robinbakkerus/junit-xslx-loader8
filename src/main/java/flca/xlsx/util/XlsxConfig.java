@@ -28,16 +28,16 @@ public class XlsxConfig {
 	 * the length of an excel value is used to pick one of the formats below.
 	 */
 	private static List<SimpleDateFormat> makeDefDateFormats() {
-		List<SimpleDateFormat>  result = new ArrayList<>();
-		result.add(new SimpleDateFormat("dd-MM-yyyy"));
-		result.add(new SimpleDateFormat("d-MM-yyyy")); 
-		result.add(new SimpleDateFormat("dd-M-yyyy")); 
-		result.add(new SimpleDateFormat("d-M-yyyy")); 
-		result.add(new SimpleDateFormat("HH:mm"));
-		result.add(new SimpleDateFormat("HH:mm:ss"));
-		result.add(new SimpleDateFormat("dd-MM-yyyy HH:mm"));
-		result.add(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
-		return result;
+		List<SimpleDateFormat>  r = new ArrayList<>();
+		r.add(new SimpleDateFormat("dd-MM-yyyy"));
+		r.add(new SimpleDateFormat("d-MM-yyyy")); 
+		r.add(new SimpleDateFormat("dd-M-yyyy")); 
+		r.add(new SimpleDateFormat("d-M-yyyy")); 
+		r.add(new SimpleDateFormat("HH:mm"));
+		r.add(new SimpleDateFormat("HH:mm:ss"));
+		r.add(new SimpleDateFormat("dd-MM-yyyy HH:mm"));
+		r.add(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
+		return r;
 	}
 	
 	static {

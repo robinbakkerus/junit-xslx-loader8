@@ -32,13 +32,13 @@ public class XlsxDataHash {
 	 * @return List<XlsData>
 	 */
 	public List<XlsxData> getData(final String classname) {
-		List<XlsxData> result = new ArrayList<>();
+		List<XlsxData> r = new ArrayList<>();
 		for (XlsxData xlsdata : xlsDataHash) {
 			if (xlsdata.getFqn().equals(classname)) {
-				result.add(xlsdata);
+				r.add(xlsdata);
 			}
 		}
-		return result;
+		return r;
 	}
 
 	/**

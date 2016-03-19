@@ -18,14 +18,14 @@ class XlsxDateFmtHelper {
 	}
 
 	SimpleDateFormat find(final String value) throws XlsxSetValueException {
-		SimpleDateFormat result = findByLongPattern(value);
-		if (result != null) {
-			return result;
+		SimpleDateFormat r = findByLongPattern(value);
+		if (r != null) {
+			return r;
 		}
 		
-		result = findByShortPattern(value);
-		if (result != null) {
-			return result;
+		r = findByShortPattern(value);
+		if (r != null) {
+			return r;
 		}
 
 		throw new XlsxSetValueException("Can not find matching dateformat pattern for ", value);

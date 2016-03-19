@@ -16,7 +16,7 @@ public class XlsxData {
 	private Map<Integer, String[]> valuesMap;
 
 	/**
-	 * Returns an array of String that belong to row with 'nr' equals the given nr. The first instance (result[0] corresponds with the first property.
+	 * Returns an array of String that belong to row with 'nr' equals the given nr. The first instance (r[0] corresponds with the first property.
 	 * @param nr, int 
 	 * @return String[]
 	 * @throws NoSuchElementException

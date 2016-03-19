@@ -12,18 +12,18 @@ public class Person {
 	private Person partner;
 	
 	public Double totalIncome() {
-		Double result = 0.0d;
+		Double r = 0.0d;
 		for (Job job : jobs) {
-			result += job.getSalary().getAmount().doubleValue();
+			r += job.getSalary().getAmount().doubleValue();
 		}
 		
 		if (partner != null && partner.getJobs() != null) {
 			for (Job job : partner.getJobs()) {
-				result += job.getSalary().getAmount().doubleValue();
+				r += job.getSalary().getAmount().doubleValue();
 			}
 		}
 		
-		return result;
+		return r;
 	}
 	
 	public String getName() {
