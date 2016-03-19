@@ -4,16 +4,14 @@ package flca.xlsx.util;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import flca.xlsx.util.ConvertUtils;
-import flca.xlsx.util.ConvertUtilsImpl;
-import flca.xlsx.util.XlsxSetValueException;
 
 public class TestConvertUtils {
 
@@ -141,9 +139,22 @@ public class TestConvertUtils {
 
 	@Test
 	public void testJodaLocalDate() throws XlsxSetValueException {
-		LocalDate r = (LocalDate) cnv.convert(LocalDate.class, "02-03-2016");
-		assertTrue(r.equals(new LocalDate(2016,3,2)));
+		org.joda.time.LocalDate r = (org.joda.time.LocalDate) cnv.convert(org.joda.time.LocalDate.class, "02-03-2016");
+		assertTrue(r.equals(new org.joda.time.LocalDate(2016,3,2)));
 	}
+
+	@Test
+	public void testLocalDate() throws XlsxSetValueException {
+		LocalDate r = (LocalDate) cnv.convert(LocalDate.class, "02-03-2016");
+		assertTrue(r.equals(LocalDate.of(2016,3,2)));
+	}
+
+	@Test
+	public void testLocalDateTime() throws XlsxSetValueException {
+		LocalDateTime r = (LocalDateTime) cnv.convert(LocalDateTime.class, "02-03-2016");
+		assertTrue(r.equals(LocalDateTime.of(2016,3,2,0,0,0)));
+	}
+
 
 	@Test
 	public void testSqlDate() throws XlsxSetValueException {

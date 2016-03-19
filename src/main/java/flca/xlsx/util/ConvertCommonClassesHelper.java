@@ -2,12 +2,16 @@ package flca.xlsx.util;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
+
+import java.time.LocalDate;
 
 /**
  * 
@@ -23,8 +27,10 @@ final class ConvertCommonClassesHelper {
 			add(Date.class);
 			add(java.sql.Date.class);
 			add(DateTime.class);
-			add(LocalDate.class);
+			add(org.joda.time.LocalDate.class);
 			add(BigDecimal.class);
+			add(LocalDate.class);
+			add(LocalDateTime.class);
 		}
 	};
 
@@ -63,6 +69,10 @@ final class ConvertCommonClassesHelper {
 				return string2SqlTime(value);
 			} else if (targetClass.equals(LocalDate.class)) {
 				return string2LocalDate(value);
+			} else if (targetClass.equals(LocalDateTime.class)) {
+				return string2LocalDateTime(value);
+			} else if (targetClass.equals(org.joda.time.LocalDate.class)) {
+				return string2JodaLocalDate(value);
 			} else if (targetClass.equals(DateTime.class)) {
 				return string2DateTime(value);
 			} else if (targetClass.equals(BigDecimal.class)) {
@@ -113,7 +123,27 @@ final class ConvertCommonClassesHelper {
 	private static LocalDate string2LocalDate(String aValue) throws XlsxSetValueException {
 		try {
 			Date date = string2Date(aValue);
-			return new LocalDate(date.getTime());
+			Instant instant = Instant.ofEpochMilli(date.getTime());
+			return LocalDateTime.ofInstant(instant, ZoneId.systemDefault())	.toLocalDate();
+		} catch (Exception ex) {
+			throw new XlsxSetValueException("string2LocalDate", aValue, ex);
+		}
+	}
+
+	private static LocalDateTime string2LocalDateTime(String aValue) throws XlsxSetValueException {
+		try {
+			Date date = string2Date(aValue);
+			Instant instant = Instant.ofEpochMilli(date.getTime());
+			return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		} catch (Exception ex) {
+			throw new XlsxSetValueException("string2LocalDate", aValue, ex);
+		}
+	}
+
+	private static org.joda.time.LocalDate string2JodaLocalDate(String aValue) throws XlsxSetValueException {
+		try {
+			Date date = string2Date(aValue);
+			return new org.joda.time.LocalDate(date.getTime());
 		} catch (Exception ex) {
 			throw new XlsxSetValueException("string2LocalDate", aValue, ex);
 		}
