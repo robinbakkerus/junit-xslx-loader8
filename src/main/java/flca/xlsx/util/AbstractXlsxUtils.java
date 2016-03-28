@@ -12,7 +12,7 @@ abstract class AbstractXlsxUtils {
 	private static final String DELIM = ",";
 
 	Set<Integer> getNrs(String value) {
-		Set<Integer> r = new HashSet<>();
+		Set<Integer> r = new HashSet<Integer>();
 
 		Matcher matcher = NRS_LIST_PATTERN.matcher(value);
 		if (matcher.find()) {
@@ -30,7 +30,7 @@ abstract class AbstractXlsxUtils {
 	}
 
 	private Set<Integer> getMultipleNrs(final Matcher m) {
-		Set<Integer> r = new HashSet<>();
+		Set<Integer> r = new HashSet<Integer>();
 		for (int i = getNr(m.group(1)); i <= getNr(m.group(3)); i++) {
 			r.add(i);
 		}

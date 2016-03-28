@@ -17,7 +17,7 @@ class MethodHelper {
 	 * key is the classname, values are all properties that have getters and
 	 * setters.
 	 */
-	private static Map<Class<?>, Map<String, PropertyDescriptor>> classProperties = new HashMap<>();
+	private static Map<Class<?>, Map<String, PropertyDescriptor>> classProperties = new HashMap<Class<?>, Map<String,PropertyDescriptor>>();
 
 	private MethodHelper() {
 	}
@@ -66,7 +66,7 @@ class MethodHelper {
 	}
 
 	private static Map<String, PropertyDescriptor> getProperties(Class<?> clz) throws IntrospectionException {
-		Map<String, PropertyDescriptor> r = new HashMap<>();
+		Map<String, PropertyDescriptor> r = new HashMap<String, PropertyDescriptor>();
 		for (PropertyDescriptor prop : Introspector.getBeanInfo(clz, Object.class).getPropertyDescriptors()) {
 			r.put(prop.getName(), prop);
 		}

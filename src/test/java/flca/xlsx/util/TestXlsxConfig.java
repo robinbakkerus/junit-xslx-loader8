@@ -55,6 +55,21 @@ public class TestXlsxConfig {
 		XlsxConfig.reset();
 		int n3 = XlsxConfig.getDateFormats().size();
 		assertTrue(n1==n3 && n2 == 0);
-		
+	}
+	
+	@Test
+	public void testReadConfigValues() {
+		XlsxConfig.maxCols = 50;
+		XlsxConfig.setDateFormats(new ArrayList<SimpleDateFormat>());
+		XlsxConfig.setAliases(new ArrayList<XlsxAlias>());
+		XlsxConfig.setSpecialConvertUtils(null);
+		assertTrue(XlsxConfig.getDateFormats().size() == 0);
+		assertTrue(XlsxConfig.getAliases().size() == 0);
+		XlsxConfig.readFromXlsx("/config.xlsx");
+		assertTrue(XlsxConfig.maxCols == 500);
+		assertTrue(XlsxConfig.getDateFormats().size()==8);
+		assertTrue(XlsxConfig.getAliases().size()==1);
+		assertTrue(XlsxConfig.getSpecialConvertUtils()!=null);
+		XlsxConfig.reset();
 	}
 }

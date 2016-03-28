@@ -11,7 +11,7 @@ class XlsxDateFmtHelper {
 	
 	public XlsxDateFmtHelper(List<SimpleDateFormat> dateFormats) {
 		super();
-		this.dateFormatInfos = new ArrayList<>();
+		this.dateFormatInfos = new ArrayList<XlsxDateFmtHelper.DateFormatInfo>();
 		for (SimpleDateFormat datefmt : dateFormats) {
 			this.dateFormatInfos.add(new DateFormatInfo(datefmt));
 		}

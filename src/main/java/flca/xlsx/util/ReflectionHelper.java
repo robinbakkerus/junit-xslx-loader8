@@ -20,11 +20,11 @@ class ReflectionHelper extends AbstractXlsxUtils {
 
 	private static final String DELIM = ",";
 	
-	private ConvertUtils convertUtils;
+	private XlsxConvertUtils convertUtils;
 
 	private XlsxDataHash xlsDataMap = null;
 
-	ReflectionHelper(XlsxDataHash xlsDataMap, ConvertUtils convertUtils) {
+	ReflectionHelper(XlsxDataHash xlsDataMap, XlsxConvertUtils convertUtils) {
 		super();
 		this.convertUtils = convertUtils;
 		this.xlsDataMap = xlsDataMap;
@@ -92,7 +92,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 					}
 				}
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			final String msg = "error setting propery " + propname + " with " + value;
 			LOGGER.severe(msg);
 			throw new XlsxSetValueException(msg, value);
@@ -142,7 +142,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 			} else {
 				setter.invoke(target, Enum.valueOf((Class<Enum>) propType, value));
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			throw new XlsxSetValueException("Can not set enum with " + value, target);
 		}
 	}
@@ -170,8 +170,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 		if (convertUtils.canConvert((Class<?>) propType)) {
 			try {
 				setter.invoke(target, convertUtils.convert((Class<?>) propType, value));
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-					| XlsxSetValueException e) {
+			} catch (Exception e) {
 				final String msg = "Error setting via " + setter.getName() + " with " + value + " :" + e.getMessage();
 				LOGGER.severe(msg);
 				throw new XlsxSetValueException(msg, value);
@@ -213,7 +212,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	private void setRelationsList(Object target, Method setter, String value, Class<?> gentyp)
 			throws XlsxSetValueException, NoSuchFieldException, IllegalAccessException, InvocationTargetException,
 			SecurityException, IntrospectionException {
-		List<Object> objects = new ArrayList<>();
+		List<Object> objects = new ArrayList<Object>();
 		for (int nr : getNrs(value)) {
 			Object obj = makeObject(gentyp, nr);
 			if (obj != null) {
@@ -227,7 +226,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 			throws XlsxSetValueException, NoSuchFieldException, IllegalAccessException, InvocationTargetException,
 			SecurityException, IntrospectionException 
 	{
-		Set<Object> objects = new HashSet<>();
+		Set<Object> objects = new HashSet<Object>();
 		for (int nr : getNrs(value)) {
 			Object obj = makeObject(gentyp, nr);
 			if (obj != null) {
@@ -258,7 +257,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 		try {
 			Class<?> clz = Class.forName(xlsdata.getFqn());
 			return clz.newInstance();
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}

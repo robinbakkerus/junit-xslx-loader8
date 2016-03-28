@@ -1,6 +1,5 @@
 package flca.xlsx.util;
 
-import java.beans.IntrospectionException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.Set;
 public class Xlsx {
 
 	private String excelFilename;
-	private Map<Byte,XlsxDataHash> xlsDataHashMap = new HashMap<>();
+	private Map<Byte,XlsxDataHash> xlsDataHashMap = new HashMap<Byte, XlsxDataHash>();
 
 
 	/**
@@ -19,6 +18,11 @@ public class Xlsx {
 	 */
 	public Xlsx(final String excelFilename) {
 		this.excelFilename = excelFilename;
+	}
+	
+	public Xlsx(final String excelFilename, final String configFilename) {
+		this(excelFilename);
+		XlsxConfig.readFromXlsx(configFilename);
 	}
 
 	/**
@@ -38,10 +42,10 @@ public class Xlsx {
 	 */
 	public Object make(final Class<?> cls, final byte sheetIndex, int nr) {
 		try {
-			ConvertUtils convertUtils = XlsxConfig.sConvertUtils;
+			XlsxConvertUtils convertUtils = XlsxConfig.getConvertUtils();
 			ReflectionHelper reflhelper = new ReflectionHelper(readData(sheetIndex), convertUtils);
 			return reflhelper.makeObject(cls, nr);
-		} catch (NoSuchFieldException | SecurityException | XlsxSetValueException | IntrospectionException e) {
+		} catch (Exception e) {
 			throw new XlsxDataUtilsException(e.getMessage(), e);
 		}
 	}
@@ -60,7 +64,7 @@ public class Xlsx {
 	 * @return Set<Integer> 
 	 */
 	public Set<Integer> getAllNrs(final Class<?> clz, final byte sheetIndex) {
-		Set<Integer> r = new HashSet<>();
+		Set<Integer> r = new HashSet<Integer>();
 		for (XlsxData xlsdata : getData(clz, sheetIndex)) {
 			r.addAll(xlsdata.getNrs());
 		}

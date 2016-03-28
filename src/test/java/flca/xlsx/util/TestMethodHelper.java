@@ -41,7 +41,7 @@ public class TestMethodHelper {
 	public void testGetAllProperties() throws IntrospectionException {
 		Foo foo = new Foo();
 		Set<String> r = MethodHelper.getAllProperties(foo);
-		Assert.assertTrue(r.size()==15);
+		Assert.assertTrue(r.size()==16);
 	}
 	
 }

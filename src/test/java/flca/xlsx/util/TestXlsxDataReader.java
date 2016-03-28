@@ -103,12 +103,23 @@ public class TestXlsxDataReader {
 	public void testOtherDateFormats() throws Exception {
 		Xlsx xls = new Xlsx(FILENAME2);
 		List<SimpleDateFormat> defaultDateFormats = XlsxConfig.getDateFormats();
-		List<SimpleDateFormat> myDateFormats = new ArrayList<>();
+		List<SimpleDateFormat> myDateFormats = new ArrayList<SimpleDateFormat>();
 		myDateFormats.add(new SimpleDateFormat("dd/MM/yyyy"));
 		XlsxConfig.setDateFormats(myDateFormats);
 		Date r = (Date) xls.make(Date.class, SHEET1, 5);
 		XlsxConfig.setDateFormats(defaultDateFormats); //reset to defaults!
 		assertTrue(r != null && r.equals(new DateTime(1954,11,9,0,0,0).toDate()));
+	}
+	
+	@Test
+	public void testAlias() throws Exception {
+		Xlsx xls = new Xlsx(FILENAME1);
+		XlsxConfig.reset();
+		List<XlsxAlias> aliasList = new ArrayList<XlsxAlias>();
+		aliasList.add(new XlsxAlias("*", "veryLongPropertyName", "vlpn"));
+		XlsxConfig.setAliases(aliasList);
+		Foo foo = (Foo) xls.make(Foo.class, SHEET1, 10);
+		assertTrue(foo.getVeryLongPropertyName().equals("ABC"));
 	}
 	
 	@Test

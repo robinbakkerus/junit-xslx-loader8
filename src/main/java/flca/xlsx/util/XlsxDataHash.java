@@ -32,7 +32,7 @@ public class XlsxDataHash {
 	 * @return List<XlsData>
 	 */
 	public List<XlsxData> getData(final String classname) {
-		List<XlsxData> r = new ArrayList<>();
+		List<XlsxData> r = new ArrayList<XlsxData>();
 		for (XlsxData xlsdata : xlsDataHash) {
 			if (xlsdata.getFqn().equals(classname)) {
 				r.add(xlsdata);

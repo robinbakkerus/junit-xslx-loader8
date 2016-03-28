@@ -2,11 +2,14 @@ package test.example;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import flca.xlsx.util.Xlsx;
 import flca.xlsx.util.XlsxConfig;
+import flca.xlsx.util.XlsxConfigValues;
 import flca.xlsx.util.XlsxDataWriter;
 import test.example.data.House;
 import test.example.data.Job;
@@ -28,7 +31,7 @@ public class TestExample {
 
 	 @Override
 	 public boolean canConvert(Class<?> aClass) {
-		return super.canConvert(aClass) || Salary.class.equals(aClass);
+		return Salary.class.equals(aClass);
  	 } 
 
 	 @Override
@@ -36,13 +39,14 @@ public class TestExample {
 	    if (aClass.equals(Salary.class)) {
 	      return Salary.withAmount(new BigDecimal(aValue));
 	    } else {
-	      return super.convert(aClass, aValue);
+	      throw new XlsxSetValueException("Can not convert " + aClass.getName(), aValue, null);
 	    }  
 	 }
 	 */
 	@BeforeClass
 	public static void setup() {
-		XlsxConfig.sConvertUtils = new ExampleConvertUtils();
+		XlsxConfig.setSpecialConvertUtils(new ExampleConvertUtils());
+		// alternatively one could do: Xlsx xlsx = new Xlsx("/testdata/example.xslx","/config.xlsx")
 	}
 	
 	/*
@@ -52,6 +56,8 @@ public class TestExample {
 	public void testMakeTemplateExcel() {
 		XlsxDataWriter.writeXlsxFile("/tmp/example.xlsx",  
 				Person.class, Person.class, House.class, Job.class, MortgageProductType.class, TestCase.class );
+		XlsxDataWriter.writeXlsxFile("/tmp/config.xlsx",  
+				XlsxConfigValues.class, SimpleDateFormat.class );
 	}
 
 	/*
@@ -75,7 +81,7 @@ public class TestExample {
 	 * and in addition we also create to dedicated class just for this junit test:  Testcase, that contains the expected r values.
 	 * Alternatively we could have put extra properties in TestCase (like Person person, House house etc), than only make the TestCase object,
 	 * and grap the object needed for the service from this TestCase instance.
-	 * Than we run the mortgage service and finally the r with expected rs.
+	 * Than we run the mortgage service and finally the r with expected results.
 	 */
 	private void testTestcase(Xlsx xls, byte sheet, int nr) {
 		System.out.println("testing " + sheet + "/" + nr);

@@ -43,7 +43,7 @@ final class ConvertPrimitivesHelper {
 	 *            Class<?>
 	 * @return boolean
 	 */
-	public static boolean isTransferable(Class<?> clz) {
+	public static boolean canConvert(Class<?> clz) {
 		return TRANSFERABLES.contains(clz);
 	}
 
@@ -58,7 +58,7 @@ final class ConvertPrimitivesHelper {
 	 * @return Object
 	 * @throws XlsxSetValueException
 	 */
-	public static Object string2Object(Class<?> targetClass, String value) throws XlsxSetValueException {
+	public static Object convert(Class<?> targetClass, String value) throws XlsxSetValueException {
 		if (value == null) {
 			final String msg = "string2Object called with null " + targetClass.getName();
 			throw new XlsxSetValueException(msg, null);

@@ -31,6 +31,7 @@ final class ConvertCommonClassesHelper {
 			add(BigDecimal.class);
 			add(LocalDate.class);
 			add(LocalDateTime.class);
+			add(SimpleDateFormat.class);
 		}
 	};
 
@@ -45,7 +46,7 @@ final class ConvertCommonClassesHelper {
 	 * @param clz, Class<?>
 	 * @return boolean
 	 */
-	public static boolean isTransferable(Class<?> clz) {
+	public static boolean canConvert(Class<?> clz) {
 		return TRANSFERABLES.contains(clz);
 	}
 
@@ -56,7 +57,7 @@ final class ConvertCommonClassesHelper {
 	 * @return Object
 	 * @throws XlsxSetValueException
 	 */
-	public static Object string2Object(Class<?> targetClass, String value) throws XlsxSetValueException {
+	public static Object convert(Class<?> targetClass, String value) throws XlsxSetValueException {
 		if (value == null || value.isEmpty()) {
 			final String msg = "string2Object called with null or empty value " + targetClass.getName();
 			throw new XlsxSetValueException(msg, value);
@@ -77,6 +78,8 @@ final class ConvertCommonClassesHelper {
 				return string2DateTime(value);
 			} else if (targetClass.equals(BigDecimal.class)) {
 				return string2BigDecimal(value);
+			}  else if (targetClass.equals(SimpleDateFormat.class)) {
+				return string2SimpleDateFormat(value);
 			} else {
 				throw new XlsxSetValueException("Can not convert to " + targetClass.getName(), value);
 			}
@@ -158,5 +161,11 @@ final class ConvertCommonClassesHelper {
 		}
 	}
 
-
+	private static SimpleDateFormat string2SimpleDateFormat(String aValue) throws XlsxSetValueException {
+		try {
+			return new SimpleDateFormat(aValue);
+		} catch (Exception ex) {
+			throw new XlsxSetValueException("string2DateTime", aValue, ex);
+		}
+	}
 }
