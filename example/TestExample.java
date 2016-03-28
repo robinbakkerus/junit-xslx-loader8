@@ -18,26 +18,27 @@ import test.example.service.MortgageServiceImpl;
 public class TestExample {
 
 	private static final String FILENAME = "/testdata/example.xlsx";
-	
+
 	/*
 	 * In this example we provide our own mapper to convert a stringvalue to the Salary object
 	 * Here in the setup we register this mapper.
 	 */
 	@BeforeClass
 	public static void setup() {
-		XlsxConfig.sConvertUtils = new ExampleConvertUtils();
+		XlsxConfig.setSpecialConvertUtils(new ExampleConvertUtils());
+		// alternatively one could do: Xlsx xlsx = new Xlsx("/testdata/example.xslx","/config.xlsx")
 	}
-	
+
 //	@Test We only have to this once, to create an empty excel template !
 	public void testMakeTemplateExcel() {
-		XlsxDataWriter.writeXlsFile("/tmp/example.xlsx",  
+		XlsxDataWriter.writeXlsFile("/tmp/example.xlsx",
 				Person.class, Person.class, House.class, Job.class, MortgageProductType.class, TestCase.class );
 	}
 
 	/*
 	 * Here we the test different scenario's for the MortgageService. The service is called like ths:
 	 * Mortgage result = new MortgageServiceImpl().calculate(aPerson, aHouse, aProductType);
-	 * We loop through all the excel sheets, and all the nr's that belong to TestCase.class 
+	 * We loop through all the excel sheets, and all the nr's that belong to TestCase.class
 	 * and call the methode testTestcase with the sheet and nr.
 	 */
 	@Test
@@ -49,11 +50,11 @@ public class TestExample {
 			}
 		}
 	}
-	
+
 	/*
-	 * With the given sheet and nr we create all the objects (Person, House, ProductType) to execute the mortgage, 
+	 * With the given sheet and nr we create all the objects (Person, House, ProductType) to execute the mortgage,
 	 * and in addition we also create to dedicated class just for this junit test:  Testcase, that contains the expected result values.
-	 * Alternatively we could have put extra properties in TestCase (like Person person, House house etc), and only a TestCase object. 
+	 * Alternatively we could have put extra properties in TestCase (like Person person, House house etc), and only a TestCase object.
 	 * Than we run the mortgage service and finally the resukt with expected results.
 	 */
 	private void testTestcase(Xlsx xls, byte sheet, int nr) {
