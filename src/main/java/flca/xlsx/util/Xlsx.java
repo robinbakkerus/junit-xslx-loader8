@@ -21,7 +21,7 @@ public class Xlsx {
 	}
 	
 	public Xlsx(final String excelFilename, final String configFilename) {
-		this(excelFilename);
+		this.excelFilename = excelFilename;
 		XlsxConfig.readFromXlsx(configFilename);
 	}
 

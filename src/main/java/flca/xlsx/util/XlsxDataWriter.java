@@ -23,6 +23,8 @@ public class XlsxDataWriter {
 	private CreationHelper createHelper = null;
 	private short rownr = 0;
 
+	private XlsxAliasHelper aliasHelper = new XlsxAliasHelper(XlsxConfig.getAliases());
+	
 	private static final String SHEET1 = "sheet1";
 	private static final String HDR_NR = "nr";
 	private static final String HDR_VALUE = "value";
@@ -118,7 +120,8 @@ public class XlsxDataWriter {
 
 		for (String propname : MethodHelper.getAllProperties(clz)) {
 			cell = row.createCell(col++);
-			cell.setCellValue(createHelper.createRichTextString(propname));
+			String propnameOrAlias = aliasHelper.getAlias(clz.getName(), propname);
+			cell.setCellValue(createHelper.createRichTextString(propnameOrAlias));
 			style = workbook.createCellStyle();
 			cell.setCellStyle(withBoldStyle(style));
 		}

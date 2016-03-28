@@ -48,10 +48,39 @@ public class XlsxAliasHelper {
 		return propnameOrAlias;
 	}
 
-	private String findPropertyName(final String clsname, final String propnameOrAlias) {
+	/**
+	 * Returns the actual given the input name. This may an alias.
+	 * @param name String
+	 * @return String actual property name.
+	 */
+	public String getAlias(final String classname, final String property) {
+		for (String findClassname : findClsNames(classname)) {
+			String r = findAlias(findClassname, property);
+			if (r != null) {
+				return r;
+			}
+		}
+		return property;
+	}
+
+	private String findPropertyName(final String clsname, final String property) {
 		if (aliasMap.containsKey(clsname)) {
-			if (aliasMap.get(clsname).containsKey(propnameOrAlias)) {
-				return aliasMap.get(clsname).get(propnameOrAlias);
+			if (aliasMap.get(clsname).containsKey(property)) {
+				return aliasMap.get(clsname).get(property);
+			}
+		}
+		return null;
+	}
+
+	private String findAlias(final String clsname, final String property) {
+		if (aliasMap.containsKey(clsname)) {
+			Map<String, String> propmap = aliasMap.get(clsname);
+			if (propmap.containsValue(property)) {
+				for (String key : propmap.keySet()) {
+					if (propmap.get(key).equals(property)) {
+						return key;
+					}
+				}
 			}
 		}
 		return null;
