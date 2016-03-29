@@ -1,14 +1,11 @@
 package flca.xlsx.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.junit.Test;
-
-import flca.xlsx.util.XlsxConfig;
-import flca.xlsx.util.XlsxSetValueException;
 
 public class TestXlsxConfig {
 
@@ -72,4 +69,5 @@ public class TestXlsxConfig {
 		assertTrue(XlsxConfig.getSpecialConvertUtils()!=null);
 		XlsxConfig.reset();
 	}
+	
 }
