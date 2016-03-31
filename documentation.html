@@ -11,10 +11,299 @@
   </head>
   <body>
     <section class="main-content">
-      <h3>Welcome to junit-xlsdata-loader documentation</h3>
+<h3>Welcome to junit-xlsdata-loader documentation</h3>
 <p>
-  This page is under construction... stay tuned.
+  Index
+  How to fill the Excel file
+  API
+  XlsxConfig
 </p>
+<h3>How to fill the Excel file</h3>
+<p>
+  One can create an Excel file (2007 .xlsx format) from scratch, but obviously it is much more convenient to use this utility to create an empty template, and start from there:
+  For example:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xlsx",
+     Person.class, Person.class, House.class, Job.class,
+     MortgageProductType.class, TestCase.class);
+</code></pre></figure>
+  Note: There are two other variations on this method:
+  <figure class="highlight"><pre><code class="language-java" data-lang="java">  XlsDataWriter.writeXlsFile("example.xls", “config.xlsx”,
+      Person.class, Person.class, House.class, Job.class,
+      MortgageProductType.class, TestCase.class);
+  </code></pre></figure>
+  and:
+  <figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xls", aliases, //=List of XlsxAlias
+    Person.class, Person.class, House.class, Job.class,
+   MortgageProductType.class, TestCase.class);
+  </code></pre></figure>
+
+  With the latter two methods, (long) property names can replaces with (short) alias names, making the generated excel more readable. The aliases can be  provided explicitly like in the last example, or via an existing excel file like 'config.xlsx' in the second example.
+  This excel file is explained in detail under XlsxConfig.
+<br>
+Besides generating an excel template file to populate your test classes, XlsxDataWrites also has a feature to generate an excel template file that can be used
+as a starting point for aliasses to otherwise long property names, see:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsxDataWriter.writeAliasXlsxFile(FILENAME5, (short) 10, Foo.class, Bar.class);
+</code></pre></figure>
+<br>
+The use of such a file is also explained under XlsxConfig.
+<br><br>
+Coming back to our first method:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xlsx",
+     Person.class, Person.class, House.class, Job.class,
+     MortgageProductType.class, TestCase.class);
+</code></pre></figure>
+<br>
+  This method accepts the output filename, and a number of classes that will be generated. The same class may appear more than once, to indicate that this object
+  server another purpose.
+  For example the customer is a Person class, and this customer has a partner property that is also a Person class.
+  The command above generates the following excel file:
+<br>
+<img src="images/image1.png" alt="example excel">
+<br>
+  You can rearrange this worksheet any way you want (you may even move blocks to another worksheet), as long as you obey some basis rules that define a class that can be populated:
+<ul>
+  <li>
+    A particular cell contains a fully qualified class-name. (ex: cell 9:1 = test.example.data.House)
+  </li>
+  <li>
+    Right below the cell above is a cell with the header:  'nr'. This acts as the (xlsx) primary key to refer to a particular row with property values.
+  </li>
+  <li>
+    Next to this 'nr' cell are the property names of this class. It does not matter if this class also has a propery
+  <li>
+    The value under (the first) 'nr' header, must be filled with an int or list of int's. This nr must be unique for this cell within this sheet. The following values are all accepted:<br>
+    101   # you don't have to start with 0 or 1 <br>
+    1,2,3,4  # all property values for key 1,2,3 and 4 will be same <br>
+    1..4 # is equivalent to list above (hence 1 and 4 inclusive!)
+  </li>
+  <li>
+    There should be no empty cell under 'nr' , becaise the first empty cell indicates the total number op record for the class.
+  </li>
+</ul>
+
+  Here are some examples of wrong excel fragments (red indicates the error) :
+  <br>
+  <img src="images/image2.png" alt="example excel">
+  address must be moved to the left.
+
+  <br>
+  <img src="images/image3.png" alt="example excel">
+   Row between nr 1 and 2 should be removed.
+   <p>
+
+   <br>
+   <img src="images/image9.png" alt="example excel">
+    There should be an <b>empty</b> row or column between blocks.
+  <p>
+
+  All values are considered String and mappers will try to convert this value to the corresponding property type. You have to surround a string with ampersands. An empty cell is considered a null value.
+  All numeric values should use the dot as the decimal delimiter. By default the following date formats can be used:
+  <br>
+  dd-MM-yyyy, d-MM-yyyy, dd-M-yyyy, d-M-yyyy, HH:mm, HH:mm:ss, dd-MM-yyyy HH:mm, dd-MM-yyyy, HH:mm:ss
+  <br>
+  You can override these with your own set of date formats.
+  <br>
+  Note
+  Be aware that while working inside an Excel file the editor tries to be clever and automatically changes the cell format, this may lead to a different format than the supported one.
+  It is best to select all cells, right-click and cell format to text.
+  <br>
+  All property values (except primitives), can refer to other object(s). For a 1:1 relation the value should be the nr  of the corresponding type. Example:
+  <br><br>
+  <img src="images/image4.png" alt="example excel">
+  <br>
+
+  in this example Person (nr=1) has a partner (also a Person.class) with nr=101.
+  Note that in the second Person block the partner is omitted, because otherwise we would end-up in a recusive loop!
+ <br>
+  For collections a comma separated list of nr's can be used, or a range indicated with a '..'
+  This can be used in properties and nr's. :
+  <br><br>
+  <img src="images/image5.png" alt="example excel">
+  <img src="images/image6.png" alt="example excel">
+  <br>
+
+
+  Note:
+  When referring to another object, the program will first look in the same worksheet, for a corresponding instance. If it can not be found there,
+  it will scan all other worksheets (starting from the first) to retrieve this corresponding instance. If it still can not be found an exception will be raised.
+<br>
+  String values can be entered without surrounding quotes, in fact you get a warning if you use quotes. There are however two exceptions on this rule:
+  <ul>
+    <li>
+       To indicate an empty string you should use: “”
+    </li>
+    <li>
+      To indicate a fully qualified classname as the value of a property, you also need surrounding quotes:
+    </li>
+  </ul>
+  <br>
+  <img src="images/image7.png" alt="example excel">
+  <br>
+  To enter Date(Time) values, out-off-the-box, the following formats are available:
+  <br>
+  <img src="images/image8.png" alt="example excel">
+  <br>
+  You may provide your own formats, this will be explained under XlsxConfig.
+</p>
+<h3>API</h3>
+The three most important classes (and maybe the only ones you will use) are:
+<ul>
+  <li>XlsxDataWriter</li>
+  <li>Xlsx</li>
+  <li>XlsxConfig</li>
+</ul>
+<h4>XlsxDataWriter</h4>
+
+The first one has one static method, that can be used initially to create an empty excel template, that you can use as a starting point.
+For example:
+<br>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xlsx",
+  Person.class, Person.class, House.class, Job.class,
+ MortgageProductType.class, TestCase.class);
+</code></pre></figure>
+<br>
+Note: There are two other variations on this method:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xls", “config.xlsx”,
+  Person.class, Person.class, House.class, Job.class,
+  MortgageProductType.class, TestCase.class);
+</code></pre></figure>
+<br>
+
+and:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">XlsDataWriter.writeXlsFile("example.xls", aliases, //=List<XlsxAlias>
+  Person.class, Person.class, House.class, Job.class,
+ MortgageProductType.class, TestCase.class);
+</code></pre></figure>
+<br>
+
+With the latter two methods, (long) property names can replaces with (short) alias names, making the generated excel more readable. The aliases can be  provided explicitly like in the last example, or via an existing excel file like 'config.xlsx' in the second example.  This excel file is explained in detail under XlsxConfig at page 7
+
+<h4>Xlsx</h4>
+
+The Xlsx class is the actual workhorse. It has two constructors. The first one has one parameter: the name  of the excel file. This can be an absolute path (ex “/tmp/example.xlsx”) or file on the classpath.
+<figure class="highlight"><pre><code class="language-java" data-lang="java">Xlsx xls = new Xlsx(“/example.xlsx”);
+</code></pre></figure>
+<br>
+
+The other has a second parameter: the name of an excel file that contains the XlsxConfig settings, for example (because most likely only the aliases will very), a typical pattern is the following:
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">@BeforeClass
+public static void setup() {
+	XlsxConfg.readFromXlsx(“/config.xlsx”);
+}
+:
+Xlsx xls = new Xlsx(“/example.xlsx”, “/aliasses.xlsx”);
+</code></pre></figure>
+<br>
+
+The writeXlsxFile() method will generate an initial excel file with only one worksheet. You can create up to 255 (a byte) extra sheets. To retrieve the total number of sheets:
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">byte nSheets = xlsx.shoutCount();
+</code></pre></figure>
+<br>
+
+As we have seen before, all blocks inside a sheet have a (primary) column labeled 'nr'. To obtain all the nr's that belong to particular class in a particular worksheet do:
+
+To find if a particular class exists use:
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">Set<Integer>if (xlsx.contains(Person.class, sheetnr)) { ...
+</code></pre></figure>
+<br>
+
+Note that if you have more than one class of the same type (ex customer of type Person with a partner of type Person), you  will get the nr's of both the customer and partner! Hence if you need the customer in one of your tests, the following is not correct:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">Set<Integer>for (int nr : nrs) {
+   Person customer = (Person) xlsx(Person.class, sheet, nr);
+    doTest(customer);
+}
+</code></pre></figure>
+<br>
+
+because you will also run your test with the partner! To solve this issue you have two options:
+
+<ul>
+  <li>
+create an extra test class just for this purpose, that contains a property Person person, and refer to customers only, and use this test class like:    <br>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">Set<Integer>for (int nr : nrs) {
+   Testclass testclass = (Testclass) xlsx(Testclass.class, sheet, nr);
+    doTest(testclass.getPerson());
+}
+</code></pre></figure>
+  </li>
+  <li>
+    Make sure that the nr's for the partner can be recognized and use that, for example: <br>
+    <figure class="highlight"><pre><code class="language-java" data-lang="java">for (int nr : nrs) {
+       if (nr < 100) {
+          Person customer = (Person) xlsx(Person.class, sheet, nr);
+          doTest(customer);
+       }
+    }
+  </code></pre></figure>
+  </li>
+</ul>
+
+
+
+To create and populate an instance of an object, use make, for example:
+
+Person person = (Person) xlsx.make(Person.class, 0, 1);
+
+The first parameter is the class, the second the sheet number (a byte) and the last parameter the excel values from the row that corresponds with the value onder the nr column.
+
+A complete worked out example can be downloaded from the website.
+
+<h4>XlsxConfig</h4>
+
+The Xlsx and XlsxDataWriter class make use of several setting that are maintained in the static class XlsxConfig. These sessing can be maintained explicitly via an API or implicitly via an excel file that contain all settings.
+
+The following settings are available:
+<ul>
+  <li>
+    maxRows <br>
+    A value indicating how many rows should be scanned (default 1000)
+  </li>
+  <li>
+    maxCols <br>
+    A value indicating how columns should be scanned (default 500)
+  </li>
+  List of SimpleDateFormats <br>
+  See figure on page 4.
+  <li>
+    List of XlsxAlias objects <br>
+    Via a XlsxAlias objects it is possible to replace (long) property names by short alias names.
+    Default an empty list.
+  </li>
+  <li>
+    ConvertUtils <br>
+    This is an interface to you own special class that implement ConvertUtils. This converter can then convert a String value to you own objects.
+    Default EmptyConvertUtils. <br>
+    ExampleConvertUtils.java can be used as a starting point see: <br>
+    https://github.com/robinbakkerus/junit-xslx-loader6/blob/master/src/test/java/test/example/ExampleConvertUtils.java
+  </li>
+</ul>
+Here is an example how to fill these settings:
+<figure class="highlight"><pre><code class="language-java" data-lang="java">
+XlsxConfig.maxCols = 1000;
+XlsxConfig.maxRows = 5000;
+List<SimpleDateFormat> dateformats = new ArrayList<>();
+dateformats.add(new SimpleDateFormat("yyyy/MM/dd"));
+XlsxConfig.setDateFormats(dateformats);
+List<XlsxAlias> aliasses = new ArrayList<>();
+aliasses.add(new XlsxAlias("*", "veryLongPropertyName", "vlpn"));
+XlsxConfig.setAliases(aliasses);
+XlsxConfig.setSpecialConvertUtils(new ExampleConvertUtils());
+</code></pre></figure>
+<br>
+
+Another way to override the default settings, is to provide your own excel file with all these settings and use that one implicitly, like this:
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">Xlsx xlsx = new Xlsx(“/example.xlsx”, “/config.xlsx”)
+</code></pre></figure>
+
+A fully worked out example is here: <a href=example/TestExample.java>junit example</a>
+<br>
+the corresponding excel file is here:  <a href=example/example.xlsx>excel file</a>
+<br>
+and the corresponding config excel is here: <a href=example/config.xlsx>config excel file</a>
 </section>
 </body>
 </html>
