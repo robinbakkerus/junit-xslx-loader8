@@ -26,6 +26,7 @@ public class XlsxDataWriter {
     private Sheet worksheet = null;
     private CreationHelper createHelper = null;
     private short rownr = 0;
+    private short aliasNr = 0;
 
     private XlsxAliasHelper aliasHelper = null;
 
@@ -75,6 +76,21 @@ public class XlsxDataWriter {
         writer.writeXlsxFile(classes);
     }
 
+    /**
+     * static shortcut to generate a template excel with the given (absoulute)
+     * filename, and classes
+     * 
+     * @param excelFilename
+     *            String
+     * @param classes
+     *            any number of classes
+     */
+    public static void writeAliasXlsxFile(final String excelFilename, final short startNr, final Class<?>... classes) {
+        final XlsxDataWriter writer = new XlsxDataWriter(excelFilename);
+        writer.writeAliasXlsxFile(startNr, classes);
+    }
+
+    //--------------------------------
     /**
      * constructor
      * 
@@ -214,4 +230,63 @@ public class XlsxDataWriter {
         }
         return this.aliasHelper;
     }
+    
+    private final static String ALIAS_COMMENT = 
+    		"# forName can be '*', the simple classname or the fully qualified classname the fqn should be between ";
+    private final static String ALIAS_FQN = "flca.xlsx.util.XlsxAlias";
+
+    
+    public void writeAliasXlsxFile(final short startNr, Class<?>... classes) {
+        try {
+        	aliasNr = startNr;
+            final FileOutputStream fileOut = new FileOutputStream(this.filename);
+            workbook = new XSSFWorkbook();
+            createHelper = workbook.getCreationHelper();
+            worksheet = workbook.createSheet(SHEET1);
+            writeXlsxAliasHeader();
+            for (Class<?> clz : classes) {
+            	writeXlsxAliasNames(clz);
+            }
+            workbook.write(fileOut);
+            fileOut.close();
+        } catch (final Exception e) {
+            throw new XlsxDataUtilsException(e.getMessage(), e);
+        }
+     }
+
+    private void writeXlsxAliasHeader() throws IntrospectionException {
+        Row row = worksheet.createRow(rownr++);
+        Cell cell = row.createCell(0);
+        cell.setCellValue(createHelper.createRichTextString(ALIAS_COMMENT));
+        row = worksheet.createRow(rownr++);
+        cell = row.createCell(0);
+        cell.setCellValue(createHelper.createRichTextString(ALIAS_FQN));
+        row = worksheet.createRow(rownr++);
+        cell = row.createCell(0);
+        cell.setCellValue(createHelper.createRichTextString("nr"));
+        cell = row.createCell(1);
+        cell.setCellValue(createHelper.createRichTextString("forName"));
+        cell = row.createCell(2);
+        cell.setCellValue(createHelper.createRichTextString("property"));
+        cell = row.createCell(3);
+        cell.setCellValue(createHelper.createRichTextString("alias"));
+    }
+
+
+    private void writeXlsxAliasNames(final Class<?> clz) throws IntrospectionException {
+        for (final String propname : MethodHelper.getAllProperties(clz)) {
+            final Row row = worksheet.createRow(rownr++);
+            short col = 0;
+            Cell cell = row.createCell(col++);
+            cell.setCellValue(createHelper.createRichTextString("" + aliasNr++));
+            cell = row.createCell(col++);
+            cell.setCellValue(createHelper.createRichTextString(clz.getSimpleName()));
+            cell = row.createCell(col++);
+            cell.setCellValue(createHelper.createRichTextString(propname));
+            cell = row.createCell(col++);
+            cell.setCellValue(createHelper.createRichTextString(propname));
+        }
+    }
+
+
 }

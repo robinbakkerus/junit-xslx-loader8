@@ -3,7 +3,7 @@ package test.example.data;
 public class Mortgage {
 
 	private Double amount;
-	private Double incomeRatio;
+	private Double salaryIncomeRatio;
 	private Integer nYears;
 	
 	public Double getAmount() {
@@ -12,11 +12,11 @@ public class Mortgage {
 	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
-	public Double getIncomeRatio() {
-		return incomeRatio;
+	public Double getSalaryIncomeRatio() {
+		return salaryIncomeRatio;
 	}
-	public void setIncomeRatio(Double rate) {
-		this.incomeRatio = rate;
+	public void setSalaryIncomeRatio(Double rate) {
+		this.salaryIncomeRatio = rate;
 	}
 	public Integer getnYears() {
 		return nYears;

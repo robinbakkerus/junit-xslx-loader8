@@ -6,7 +6,7 @@ import java.util.List;
 public class Person {
 
 	private String name;
-	private LocalDate dob;
+	private LocalDate dateOfBirth;
 	private Sex sex;
 	private List<Job> jobs;
 	private Person partner;
@@ -32,11 +32,11 @@ public class Person {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public LocalDate getDob() {
-		return dob;
+	public LocalDate getDateOfBirth() {
+		return dateOfBirth;
 	}
-	public void setDob(LocalDate dob) {
-		this.dob = dob;
+	public void setDateOfBirth(LocalDate dob) {
+		this.dateOfBirth = dob;
 	}
 	public Sex getSex() {
 		return sex;

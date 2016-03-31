@@ -9,6 +9,9 @@ import org.junit.Test;
 
 public class TestXlsxConfig {
 
+	private final static String CONFIG_FILE = "/config.xlsx";
+	private final static String ALIAS_FILE = "/aliases.xlsx";
+
 	@Test
 	public void test1() {
 		SimpleDateFormat df1 = XlsxConfig.getDateFormats().get(0);
@@ -68,6 +71,14 @@ public class TestXlsxConfig {
 		assertTrue(XlsxConfig.getAliases().size()==1);
 		assertTrue(XlsxConfig.getSpecialConvertUtils()!=null);
 		XlsxConfig.reset();
+	}
+
+	@Test
+	public void testMergeAliases() {
+		XlsxConfig.readFromXlsx(CONFIG_FILE);
+		assertTrue(XlsxConfig.getAliases().size() == 1);
+		XlsxConfig.readFromXlsx(ALIAS_FILE);
+		assertTrue(XlsxConfig.getAliases().size() == 2);
 	}
 	
 }

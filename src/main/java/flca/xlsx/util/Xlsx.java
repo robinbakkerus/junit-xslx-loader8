@@ -31,7 +31,7 @@ public class Xlsx {
 	 * @return List<XlsData>
 	 */
 	public List<XlsxData> getData(final Class<?> aClass, final byte sheetIndex) {
-		return readData(sheetIndex).getData(aClass.getName());
+		return readData().get(sheetIndex).getData(aClass.getName());
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class Xlsx {
 	public Object make(final Class<?> cls, final byte sheetIndex, int nr) {
 		try {
 			XlsxConvertUtils convertUtils = XlsxConfig.getConvertUtils();
-			ReflectionHelper reflhelper = new ReflectionHelper(readData(sheetIndex), convertUtils);
+			ReflectionHelper reflhelper = new ReflectionHelper(sheetIndex, readData(), convertUtils);
 			return reflhelper.makeObject(cls, nr);
 		} catch (Exception e) {
 			throw new XlsxDataUtilsException(e.getMessage(), e);
@@ -70,21 +70,38 @@ public class Xlsx {
 		}
 		return r;
 	}
+
+	/**
+	 * returns all the nr's belong to the given class 
+	 * @param clz Class<?> 
+	 * @return Set<Integer> 
+	 */
+	public boolean contains(final Class<?> clz, final byte sheetIndex) {
+		if (getData(clz, sheetIndex) != null) {
+			return getAllNrs(clz, sheetIndex).size() > 0;
+		} else {
+			return false;
+		}
+	}
 	
+
 	/**
 	 * Returns the XlsDataHash that corresponds with the given sheet
 	 * @param sheetIndex byte
 	 * @return XlsDataHash
 	 */
 	public XlsxDataHash getDataHash(final byte sheetIndex) {
-		return readData(sheetIndex);
+		return readData().get(sheetIndex);
 	}
 	
-	private XlsxDataHash readData(byte sheetIndex) {
-		if (!xlsDataHashMap.containsKey(sheetIndex)) {
-			xlsDataHashMap.put(sheetIndex, XlsxDataReader.read(excelFilename, sheetIndex));
+	private Map<Byte, XlsxDataHash> readData() {
+		byte sheetCnt = XlsxDataReader.sheetCount(excelFilename);
+		for (byte sheetIndex=0; sheetIndex<sheetCnt; sheetIndex++) {
+			if (!xlsDataHashMap.containsKey(sheetIndex)) {
+				xlsDataHashMap.put(sheetIndex, XlsxDataReader.read(excelFilename, sheetIndex));
+			}
 		}
-		return xlsDataHashMap.get(sheetIndex);
+		return xlsDataHashMap;
 	}
 	
 }

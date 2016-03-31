@@ -43,6 +43,51 @@ public class XlsxAlias {
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+		result = prime * result + ((forName == null) ? 0 : forName.hashCode());
+		result = prime * result + ((property == null) ? 0 : property.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		XlsxAlias other = (XlsxAlias) obj;
+		if (alias == null) {
+			if (other.alias != null)
+				return false;
+		} else if (!alias.equals(other.alias))
+			return false;
+		if (forName == null) {
+			if (other.forName != null)
+				return false;
+		} else if (!forName.equals(other.forName))
+			return false;
+		if (property == null) {
+			if (other.property != null)
+				return false;
+		} else if (!property.equals(other.property))
+			return false;
+		return true;
+	}
+
+
+	@Override
+	public String toString() {
+		return "XlsxAlias [forName=" + forName + ", property=" + property + ", alias=" + alias + "]";
+	}
 	
 	
 }

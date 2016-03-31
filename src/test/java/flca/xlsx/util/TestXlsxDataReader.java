@@ -81,7 +81,7 @@ public class TestXlsxDataReader {
 	public void testReferToOtherDate() throws Exception {
 		Xlsx xls = new Xlsx(FILENAME2);
 		Foo foo = (Foo) xls.make(Foo.class, SHEET1, 1);
-		assertTrue(foo.getDatum().equals(new DateTime(1954,11,9,0,0,0).toDate()));
+		assertTrue(foo.getDateOfBirth().equals(new DateTime(1954,11,9,0,0,0).toDate()));
 	}
 	
 	@Test 

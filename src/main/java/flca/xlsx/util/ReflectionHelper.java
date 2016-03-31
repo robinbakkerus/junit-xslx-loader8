@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -21,11 +22,12 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	private static final String DELIM = ",";
 	
 	private XlsxConvertUtils convertUtils;
+	private Map<Byte, XlsxDataHash> xlsDataMap = null;
+	private byte activeSheetNr;
 
-	private XlsxDataHash xlsDataMap = null;
-
-	ReflectionHelper(XlsxDataHash xlsDataMap, XlsxConvertUtils convertUtils) {
+	ReflectionHelper(byte activeSheetNr, Map<Byte, XlsxDataHash> xlsDataMap, XlsxConvertUtils convertUtils) {
 		super();
+		this.activeSheetNr = activeSheetNr;
 		this.convertUtils = convertUtils;
 		this.xlsDataMap = xlsDataMap;
 	}
@@ -33,7 +35,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	Object makeObject(final Class<?> clz, final int nr)
 			throws XlsxSetValueException, NoSuchFieldException, SecurityException, IntrospectionException 
 	{
-		XlsxData xlsdata = xlsDataMap.getData(clz.getName(), nr);
+		XlsxData xlsdata = getXlsxData(clz.getName(), nr);
 		if (convertUtils.canConvert(clz)) {
 			return makeKnownObjectint(clz, nr, xlsdata);
 		} else if (clz.isEnum()) {
@@ -148,13 +150,13 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	}
 
 	private String getStringValue(XlsxData xlsdata, Object target, int nr) {
-		final XlsxData xlsEnumData = xlsDataMap.getData((Class<?>) target, nr);
+		final XlsxData xlsEnumData = getXlsxData((Class<?>) target, nr);
 		return xlsEnumData.getValue(nr, 0);
 	}
 
 	private void setPropValue(Object target, Object propType, Method setter, String value) throws XlsxSetValueException {
 		if (isRefToNr(propType, value)) {
-			final XlsxData xlsdata = xlsDataMap.getData((Class<?>)propType, getNr(value));
+			final XlsxData xlsdata = getXlsxData((Class<?>)propType, getNr(value));
 			setThePropValue(target, propType, setter, getStringValue(xlsdata, propType, getNr(value)));
 		} else {
 			setThePropValue(target, propType, setter, value);
@@ -163,7 +165,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	
 	private boolean isRefToNr(Object propType, String value) {
 		Class<?> clz =(Class<?>)propType;
-		return isNumeric(value) && !clz.isPrimitive() && xlsDataMap.hasXlsData((Class<?>)propType, getNr(value));
+		return isNumeric(value) && !clz.isPrimitive() && getXlsxData((Class<?>)propType, getNr(value)) != null;
 	}
 
 	private void setThePropValue(Object target, Object propType, Method setter, String value) throws XlsxSetValueException {
@@ -300,6 +302,28 @@ class ReflectionHelper extends AbstractXlsxUtils {
 		}
 	}
 
+	private XlsxData getXlsxData(Class<?> clz, int nr) {
+		return getXlsxData(clz.getName(), nr);
+	}
+	
+	private XlsxData getXlsxData(String classname, int nr) {
+		XlsxDataHash datahash = xlsDataMap.get(activeSheetNr);
+		if (datahash.hasXlsData(classname, nr)) {
+			return datahash.getData(classname, nr);
+		} else {
+			for (byte index=0; index<sheetCount(); index++) {
+				if (index != activeSheetNr && datahash.hasXlsData(classname, nr)) {
+					return datahash.getData(classname, nr);
+				} 	
+			}
+		}
+		return null;
+	}
+	
+	private byte sheetCount() {
+		return (byte) xlsDataMap.size();
+	}
+	
 	private enum PropKind {
 		SINGLE_PROP, MULTI_PROP, SINGLE_REL, MULTI_REL, ENUM_PROP
 	}

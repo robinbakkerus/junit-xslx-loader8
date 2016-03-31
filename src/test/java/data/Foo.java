@@ -16,7 +16,7 @@ public class Foo {
 	private boolean simpleBool;
 	private Boolean objBool;
 	private BigDecimal bigdec;
-	private java.util.Date datum;
+	private java.util.Date dateOfBirth;
 	private LocalDate localdate;
 	private FooType type;
 	private Bar bar;
@@ -73,11 +73,11 @@ public class Foo {
 	public void setBigdec(BigDecimal bigdec) {
 		this.bigdec = bigdec;
 	}
-	public java.util.Date getDatum() {
-		return datum;
+	public java.util.Date getDateOfBirth() {
+		return dateOfBirth;
 	}
-	public void setDatum(java.util.Date datum) {
-		this.datum = datum;
+	public void setDateOfBirth(java.util.Date datum) {
+		this.dateOfBirth = datum;
 	}
 	public LocalDate getLocaldate() {
 		return localdate;

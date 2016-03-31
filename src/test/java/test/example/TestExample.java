@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.text.SimpleDateFormat;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import flca.xlsx.util.Xlsx;
@@ -21,6 +22,8 @@ import test.example.service.MortgageServiceImpl;
 public class TestExample {
 
 	private static final String FILENAME = "/testdata/example.xlsx";
+	private static final String COMMON_CONFIG = "/config.xlsx";
+	private static final String MY_ALIASES = "/testdata/example-aliases.xlsx";
 	
 	/*
 	 * In this example we provide our own mapper to convert a stringvalue to the Salary object
@@ -45,14 +48,13 @@ public class TestExample {
 	 */
 	@BeforeClass
 	public static void setup() {
-		XlsxConfig.setSpecialConvertUtils(new ExampleConvertUtils());
-		// alternatively one could do: Xlsx xlsx = new Xlsx("/testdata/example.xslx","/config.xlsx")
+		XlsxConfig.readFromXlsx(COMMON_CONFIG);
 	}
 	
 	/*
 	* @Test We only have to this once, to create an empty excel template !
 	*/
-	@Test
+	@Ignore
 	public void testMakeTemplateExcel() {
 		XlsxDataWriter.writeXlsxFile("/tmp/example.xlsx",  
 				Person.class, Person.class, House.class, Job.class, MortgageProductType.class, TestCase.class );
@@ -68,7 +70,7 @@ public class TestExample {
 	 */
 	@Test
 	public void testCalcMortgage() {
-		Xlsx xls = new Xlsx(FILENAME);
+		Xlsx xls = new Xlsx(FILENAME, MY_ALIASES);
 		for (byte sheet=0; sheet<xls.sheetCount(); sheet++) {
 			for (Integer nr : xls.getAllNrs(TestCase.class, sheet)) {
 				testTestcase(xls, sheet, nr);
@@ -86,13 +88,13 @@ public class TestExample {
 	private void testTestcase(Xlsx xls, byte sheet, int nr) {
 		System.out.println("testing " + sheet + "/" + nr);
 		TestCase testcase = (TestCase) xls.make(TestCase.class, sheet, nr);
-		Person testPerson = (Person) xls.make(Person.class, sheet, nr);
-		House testHouse = (House) xls.make(House.class, sheet, nr);
-		MortgageProductType type = (MortgageProductType) xls.make(MortgageProductType.class, sheet, nr);
+		Person testPerson = testcase.getPerson();
+		House testHouse = testcase.getHouse();
+		MortgageProductType type = testcase.getProdtyp();
 		Mortgage r = new MortgageServiceImpl().calculate(testPerson, testHouse, type);
 		assertEquals(r.getAmount().doubleValue(),testcase.getAmount(), 1.0d);
 		assertEquals(r.getnYears(),testcase.getNyears(), 1.0d);
-		assertEquals(r.getIncomeRatio().doubleValue(),testcase.getIncomeRatio(), 1.0d);
+		assertEquals(r.getSalaryIncomeRatio().doubleValue(),testcase.getIncomeRatio(), 1.0d);
 	}
 
 }

@@ -19,7 +19,8 @@ import java.util.Set;
  */
 public class XlsxConfig {
 
-    private static final List<SimpleDateFormat> DEF_DATEFORMATS = makeDefDateFormats();
+	private static final byte SHEET1 = 0;
+	private static final List<SimpleDateFormat> DEF_DATEFORMATS = makeDefDateFormats();
     private static final int DEF_MAX_ROWS = 750;
     private static final int DEF_MAX_COLS = 500;
     private static final ConvertUtils DEF_SPECIAL_CONVERT_UTILS = new EmptyConvertUtils();
@@ -108,14 +109,17 @@ public class XlsxConfig {
     private static void fillConfigValuesFromExcel(final Xlsx xlsx) {
         XlsxConfigValues configvalues = null;
         try {
-            configvalues = (XlsxConfigValues) xlsx.make(XlsxConfigValues.class, (byte) 0, 1);
-            XlsxConfig.maxCols = configvalues.getMaxColumns();
-            XlsxConfig.maxRows = configvalues.getMaxRows();
-            if (configvalues.getFqnSpecialConvertUtils() != null) {
-                final Class<?> clz = Class.forName(configvalues.getFqnSpecialConvertUtils());
-                final ConvertUtils specialConvertUtils = (ConvertUtils) clz.newInstance();
-                sConvertUtils.setSpecialConvertUtils(specialConvertUtils);
-            }
+        	if (xlsx.contains(XlsxConfigValues.class, SHEET1)) {
+            	Set<Integer> nrs = xlsx.getAllNrs(XlsxConfigValues.class, SHEET1);
+                configvalues = (XlsxConfigValues) xlsx.make(XlsxConfigValues.class, SHEET1, nrs.iterator().next());
+                XlsxConfig.maxCols = configvalues.getMaxColumns();
+                XlsxConfig.maxRows = configvalues.getMaxRows();
+                if (configvalues.getFqnSpecialConvertUtils() != null) {
+                    final Class<?> clz = Class.forName(configvalues.getFqnSpecialConvertUtils());
+                    final ConvertUtils specialConvertUtils = (ConvertUtils) clz.newInstance();
+                    sConvertUtils.setSpecialConvertUtils(specialConvertUtils);
+                }
+        	}
         } catch (final ClassNotFoundException e) {
             final String msg = configvalues == null ? "Could nog create XlsxConfigValues"
                     : "Could not instantiate " + configvalues.getFqnSpecialConvertUtils();
@@ -132,23 +136,30 @@ public class XlsxConfig {
     }
 
     private static void fillDateFormatsFromExcel(final Xlsx xlsx) {
-        final List<SimpleDateFormat> sdflist = new ArrayList<SimpleDateFormat>();
-        final Set<Integer> nrs = xlsx.getAllNrs(SimpleDateFormat.class, (byte) 0);
-        for (final int nr : nrs) {
-            final SimpleDateFormat sdf = (SimpleDateFormat) xlsx.make(SimpleDateFormat.class, (byte) 0, nr);
-            sdflist.add(sdf);
-        }
-        XlsxConfig.setDateFormats(sdflist);
+    	if (xlsx.contains(SimpleDateFormat.class, SHEET1)) {
+        	final List<SimpleDateFormat> sdflist = new ArrayList<SimpleDateFormat>();
+            final Set<Integer> nrs = xlsx.getAllNrs(SimpleDateFormat.class, SHEET1);
+            for (final int nr : nrs) {
+                final SimpleDateFormat sdf = (SimpleDateFormat) xlsx.make(SimpleDateFormat.class, SHEET1, nr);
+                sdflist.add(sdf);
+            }
+            XlsxConfig.setDateFormats(sdflist);
+    	}
     }
 
+    /*
+     * this will merge existing aliases.
+     */
     private static void fillAliasesFromExcel(final Xlsx xlsx) {
-        final List<XlsxAlias> aliaslist = new ArrayList<XlsxAlias>();
-        final Set<Integer> nrs = xlsx.getAllNrs(XlsxAlias.class, (byte) 0);
-        for (final int nr : nrs) {
-            final XlsxAlias alias = (XlsxAlias) xlsx.make(XlsxAlias.class, (byte) 0, nr);
-            aliaslist.add(alias);
-        }
-        XlsxConfig.setAliases(aliaslist);
+    	if (xlsx.contains(XlsxAlias.class, SHEET1)) {
+        	final List<XlsxAlias> aliaslist = XlsxConfig.getAliases();
+            final Set<Integer> nrs = xlsx.getAllNrs(XlsxAlias.class, SHEET1);
+            for (final int nr : nrs) {
+                final XlsxAlias alias = (XlsxAlias) xlsx.make(XlsxAlias.class, SHEET1, nr);
+                aliaslist.add(alias);
+            }
+            XlsxConfig.setAliases(aliaslist);
+    	}
     }
 
     /**

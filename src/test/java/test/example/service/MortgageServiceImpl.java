@@ -14,7 +14,7 @@ public class MortgageServiceImpl implements MortgageService {
 		Mortgage r = new Mortgage();
 		r.setAmount(300000d);
 		r.setnYears(20);
-		r.setIncomeRatio(client.totalIncome() * 0.35);
+		r.setSalaryIncomeRatio(client.totalIncome() * 0.35);
 		return r;
 	}
 }
